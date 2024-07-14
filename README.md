@@ -1,0 +1,29 @@
+Author name: Mengxi Xia, Ziying Zhou
+Welcome to my Shell:
+
+Our shell is designed to provide basic functionalities similar to bash or zsh, including interactive and batch modes, processing commands with potential redirections and pipes, and handling built-in commands like cd, pwd, which, and exit etc.
+
+Our program can take a maximum command length of 100, and 20 arguments. Each length of a single command can have a maximum of 50. If any of the above are exceeded while using our program, it is considered a Non-sense argument, none of Shell arguments shall exceed these lengths.
+
+For test purposes, you can simply change these Macro on the top of our code. Usually, these lengths are enough for regular usage.
+
+Our program can determine running on whether batch mode or interactive mode based on having a command argument or not. Our processes commands, supporting redirection (<, >) and pipelines (|), and we support wildcard patterns in file paths for command arguments.
+
+We divided our code into two components, with or without pipeline, and for each scenario, we divided into two parts, then or else. We have a temporary int firstArgumentIndex variable to locate the position of tokens. With the temporary variable, we are able to run the same code by simply incrementing the variable int.
+
+For cases that contain pipeline, we fork1() a child process, in the child process will run the second part of the command, which is after pipeline. If we are handling executable files on both sides of the pipeline, we fork2() another child process (Not under the fork1()) in the parent process. After that we run the first part of the component in the latest created process. In the latest process, we have a new pipeline that connects it to the parent process. In this parent process, we have a buffer with a size of 10000 bytes. If the first part of code contains a STDOUT redirection, we write the information from the buffer into the file descriptor of the redirection of STDOUT. Also, the information from the buffer will be delivered to the pipe that established the connection between fork1() and fork2().
+
+The purpose of doing this is that a stream won’t be lasting long enough for us to grab the information it contains, so that we store the information into the buffer for later usage purposes.
+We can test the shell's response to commands in real-time, including the display of welcome and exit messages
+
+Test Plan:
+
+We have several test cases testing the capability of our program handling pide connection between processes. We mainly focus on ensuring comprehensive coverage of its functionalities, including interactive and batch modes, built-in commands, wildcards, redirections, and pipelines. 
+
+We also test most Linux commands and put them into a file called command.sh to test the capability of our batch mode. For testing interaction mode, we manually test commands that we usually used on regular Shell to check our functionality.
+
+Commands we used to test were: pwd, mv, cd, echo, cd, rm, mkdir, touch, sort, wc, cut, rmdir, and man.
+
+We created a couple files to test the pipe delivering. EX, test1 output abc, which is the same input as test2
+
+Test 3 outputs int between 0-20 into the txt file, and test4 reads the numbers in these files.
